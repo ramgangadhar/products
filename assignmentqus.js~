@@ -107,7 +107,7 @@ app.listen(port, function(){
 })
 
 
-/*var product1={
+var product1={
 	id:1,
 	name:"lava irise fule 50",
 	prize:8000,
@@ -146,4 +146,3 @@ console.log(category);
 
 
 
-*/
