@@ -203,7 +203,7 @@ app.put('/updateCategorie/:id',function (req,res) {
 	if (body.hasOwnProperty('Categorie') && _.isString(body.Categorie) && body.Categorie.trim().length>0)
 	{
 		updatedata.Categorie=body.Categorie;
-		console.log(updatedata);
+	
 	}
 
 	else if (body.hasOwnProperty(' Categorie')) {

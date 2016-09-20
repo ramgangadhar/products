@@ -1,0 +1,29 @@
+{
+  "name": "session12",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "express": "^4.13.3",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+  "body-parser": "^1.13.3",
+    "express": "^4.13.3",
+    "underscore": "^1.8.3"
+    },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ramgangadhar/products.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ramgangadhar/products/issues"
+  },
+  "homepage": "https://github.com/ramgangadhar/products#readme",
+  "description": ""
+}
