@@ -4,7 +4,7 @@ var _=require('underscore');
 
 var product=[];
 var category=[];
-var port=8081;
+var port=8080;
 var app=express();
 var todoid;
 var todosIndex=1;
@@ -16,11 +16,64 @@ app.get('/',function (req,res) {
 })
 
 app.get('/products',function (req,res) {
-	res.json(product);
+	
+	var queryparams=req.query;
+	filterdata=product;
+	if(queryparams.hasOwnProperty('name') && queryparams.name.length > 0){
+		var filterdata = _.filter(filterdata, function(obj){
+			return obj.name.toLocaleLowerCase().indexOf(queryparams.name) >= 0;
+		})
+		
+
+	}
+	if(queryparams.hasOwnProperty('colour') &&  queryparams.colour.length > 0 ){
+		var filterdata = _.filter(filterdata, function(obj){
+			return obj.description.colour.toLocaleLowerCase().indexOf(queryparams.colour) >= 0;
+		})
+	}
+	
+	if(queryparams.hasOwnProperty('qminmax') &&  queryparams.qminmax.length > 0 ){
+		var minmax = queryparams.qminmax;
+		var arr=minmax.split(" ");
+		var min=parseInt(arr[0]);
+		var max=parseInt(arr[1]);
+		
+		var filterdata = _.filter(filterdata, function(obj){
+			return (obj.quntity >= min) && (obj.quntity <= max);
+	
+		})
+	}
+	
+	if(queryparams.hasOwnProperty('pminmax') &&  queryparams.pminmax.length > 0 ){
+		
+		var minmax = queryparams.pminmax;
+		var arr=minmax.split(" ");
+		var min=parseInt(arr[0]);
+		var max=parseInt(arr[1]);
+		var filterdata = _.filter(filterdata, function(obj){
+			return (obj.prize >= min) && (obj.prize <= max);
+	
+		})
+	}
+		res.json(filterdata);
 })
 
 app.get('/category',function (req,res) {
-	res.json(category);
+	
+	var queryparams=req.query;
+	filterdata=category;
+	if(queryparams.hasOwnProperty('cat') && queryparams.cat.length > 0){
+		var filterdata = _.filter(filterdata, function(obj){
+			return obj.Categorie.toLocaleLowerCase().indexOf(queryparams.cat) >= 0;
+		})
+	}
+	if(queryparams.hasOwnProperty('desc') &&  queryparams.desc.length > 0 ){
+		var filterdata = _.filter(filterdata, function(obj){
+			return obj.description.toLocaleLowerCase().indexOf(queryparams.desc) >= 0;
+		})
+	}
+	
+	res.json(filterdata);
 })
 
 
@@ -62,11 +115,28 @@ app.get('/category/:id',function (req,res) {
 })	
 	
 	
+	
+	
+	//example of input product data 
+/*
+{
+  "name": "darling",
+  "prize": 8600,
+  "description": {
+    "colour": "black",
+    "active": true,
+    "name": "ram"
+  },
+  "quntity": 8,
+  "id": 1
+}*/
+
+
 app.post('/inputProductData', function(req, res){
 	
 	 
-	 	var body = _.pick(req.body,'name','prize','description','id');
-		if (!_.isString(body.name)  || body.name.trim().length==0 || !_.isNumber(body.prize) || !_.isObject(body.description) || !_.isBoolean(body.description.active) || !_.isString(body.description.colour) )
+	 	var body = _.pick(req.body,'name','prize','description','id','quntity');
+		if (!_.isString(body.name)  || body.name.trim().length==0 || !_.isNumber(body.prize) ||  !_.isNumber(body.quntity) ||!_.isObject(body.description) || !_.isBoolean(body.description.active) || !_.isString(body.description.colour) )
 		 {
 				return res.status(400).send('error occurs in data ');
     	}
@@ -88,12 +158,13 @@ app.post('/inputProductData', function(req, res){
 
 app.post('/inputcategory', function(req, res){
 	
-	var body = _.pick(req.body,'Categorie');
-	if (!_.isString(body.Categorie)  || body.Categorie.trim().length==0  )
+	var body = _.pick(req.body,'Categorie','description');
+	if (!_.isString(body.Categorie)  || body.Categorie.trim().length==0 || !_.isString(body.description)  || body.description.trim().length==0  )
 	 {
 			return res.status(400).send('error occurs in data ');
     }
 	body.Categorie=body.Categorie.trim();
+	body.description=body.description.trim();
 	
 	body.id = todosIndex++;
 
@@ -172,6 +243,16 @@ app.put('/updateProduct/:id',function (req,res) {
 		return res.status(404).json({"error" : "can't find the prize!"});
 	}
 	
+	if (body.hasOwnProperty('quntity') && _.isNumber(body.quntity) )
+	{
+		updatedata.quntity=body.quntity;
+	}
+	
+	else if (body.hasOwnProperty('quntity')) {
+	
+		return res.status(404).json({"error" : "can't find the quntity!"});
+	}
+	
 	if (body.hasOwnProperty('description') && _.isObject(body.description) )
 	{
 		updatedata.description=body.description;
@@ -203,12 +284,21 @@ app.put('/updateCategorie/:id',function (req,res) {
 	if (body.hasOwnProperty('Categorie') && _.isString(body.Categorie) && body.Categorie.trim().length>0)
 	{
 		updatedata.Categorie=body.Categorie;
-		console.log(updatedata);
+		
 	}
 
 	else if (body.hasOwnProperty(' Categorie')) {
 	
 		return res.status(404).json({"error" : "cant find the name!"});
+	}
+	if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length>0)
+	{
+		updatedata.description=body.description;
+	}
+
+	else if (body.hasOwnProperty('description')) {
+	
+		return res.status(404).json({"error" : "cant find the description!"});
 	}
 
 	
